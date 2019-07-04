@@ -8,6 +8,7 @@ tasks:
     input:
       target: /stackstorm/orchestration-demos
       recursive: True
+      sudo: True
       hosts: localhost
     next:
       - when: <% succeeded() %>
@@ -29,6 +30,14 @@ tasks:
       variable_files: ["/stackstorm/vsphere.auto.tfvars"]
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
       backend: {"path":"/stackstorm/terraform.tfstate"}
+    next:
+      - when: <% succeeded() %>
+        do: output_consul_cluster_info
+
+  output_consul_cluster_info:
+    action: terraform.output
+    input:
+      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
     next:
       - when: <% succeeded() %>
         do: configure_consul_cluster
