@@ -1,0 +1,6 @@
+---
+name: build_consul_cluster
+description: A workflow demonstrating how to rollback and retry.
+runner_type: orquesta
+entry_point: workflows/build_consul_cluster.yaml
+enabled: true
