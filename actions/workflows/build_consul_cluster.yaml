@@ -27,3 +27,5 @@ tasks:
     action: terraform.pipeline
     input:
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster/
+      variable_file: /stackstorm/vsphere.auto.tfvars
+      state_file_path: /stackstorm/terraform.tfstate
