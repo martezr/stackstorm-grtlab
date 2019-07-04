@@ -41,10 +41,12 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: configure_consul_cluster
+        publish:
+          - ip_address: <% result().instance_ip_addr.value %>
 
   configure_consul_cluster:
     action: bolt.task_run
     input:
       task: package
       params_obj: {"action":"install","name":"nano"}
-      nodes: localhost
+      nodes: <% ctx().ip_address %>
