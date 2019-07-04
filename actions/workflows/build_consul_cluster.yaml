@@ -29,3 +29,13 @@ tasks:
       variable_files: ["/stackstorm/vsphere.auto.tfvars"]
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
       backend: {"path":"/stackstorm/terraform.tfstate"}
+    next:
+      - when: <% succeeded() %>
+        do: configure_consul_cluster
+
+  configure_consul_cluster:
+    action: bolt.task_run
+    input:
+      task: package
+      params_obj: {"action":"install","name":"nano"}
+      nodes: localhost
