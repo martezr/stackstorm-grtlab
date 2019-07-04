@@ -3,17 +3,27 @@ version: 1.0
 description: A basic workflow that runs an arbitrary linux command.
 
 tasks:
+  cleanup_git_repo:
+    action: linux.rm
+    input:
+      target: /stackstorm/orchestration-demos
+      recursive: True
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: clone_build_repo
+
   clone_build_repo:
     action: git.clone
     input:
       source: https://github.com/martezr/orchestration-demos.git
-      destination: /stackstorm/
+      destination: /stackstorm/orchestration-demos
       hosts: localhost
     next:
       - when: <% succeeded() %>
-        publish:
-          - stdout: <% result().stdout %>
-          - stderr: <% result().stderr %>
+        do: provision_consul_cluster
 
-output:
-  - stdout: <% ctx(stdout) %>
+  provision_consul_cluster:
+    action: terraform.pipeline
+    input:
+      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster/
