@@ -28,4 +28,4 @@ tasks:
     input:
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster/
       variable_file: /stackstorm/vsphere.auto.tfvars
-      backend: {"path":"/stackstorm/terraform.tfstate","backend":"local"}
+      backend: "{"path":"/stackstorm/terraform.tfstate"}"
