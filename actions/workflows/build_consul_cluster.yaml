@@ -26,6 +26,6 @@ tasks:
   provision_consul_cluster:
     action: terraform.pipeline
     input:
-      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster/
-      variable_file: /stackstorm/vsphere.auto.tfvars
-      backend: "{"path":"/stackstorm/terraform.tfstate"}"
+      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
+      backend: {"path":"/stackstorm/terraform.tfstate"}
