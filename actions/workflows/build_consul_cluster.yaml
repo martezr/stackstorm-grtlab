@@ -43,6 +43,7 @@ tasks:
         do: configure_consul_cluster
         publish:
           - ip_address: <% result().result.instance_ip_addr.value %>
+          - hostname: <% result().result.vm_hostname.value %>
 
   configure_consul_cluster:
     action: bolt.task_run

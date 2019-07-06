@@ -30,14 +30,22 @@ tasks:
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
     next:
       - when: <% succeeded() %>
-        do: provision_consul_cluster
+        do: cleanup_puppet
         publish:
           - ip_address: <% result().result.instance_ip_addr.value %>
+          - hostname: <% result().result.vm_hostname.value %>
 
-  provision_consul_cluster:
-    action: terraform.pipeline
+  cleanup_puppet:
+    action: core.remote_sudo
     input:
-      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
-      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
-      backend: {"path":"/stackstorm/terraform.tfstate"}
-      destroy: True
+      cmd: /opt/puppetlabs/bin/puppetserver ca clean --certname <% ctx().hostname %>
+      hosts: 10.0.0.225
+      username: root
+
+#  provision_consul_cluster:
+#    action: terraform.pipeline
+#    input:
+#      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+#      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
+#      backend: {"path":"/stackstorm/terraform.tfstate"}
+#      destroy: True
