@@ -22,17 +22,6 @@ tasks:
       hosts: localhost
     next:
       - when: <% succeeded() %>
-        do: provision_consul_cluster
-
-  provision_consul_cluster:
-    action: terraform.pipeline
-    input:
-      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
-      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
-      backend: {"path":"/stackstorm/terraform.tfstate"}
-      destroy: True
-    next:
-      - when: <% succeeded() %>
         do: output_consul_cluster_info
 
   output_consul_cluster_info:
@@ -41,5 +30,14 @@ tasks:
       plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
     next:
       - when: <% succeeded() %>
+        do: provision_consul_cluster
         publish:
           - ip_address: <% result().result.instance_ip_addr.value %>
+
+  provision_consul_cluster:
+    action: terraform.pipeline
+    input:
+      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
+      backend: {"path":"/stackstorm/terraform.tfstate"}
+      destroy: True
