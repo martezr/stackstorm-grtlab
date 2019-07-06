@@ -22,6 +22,15 @@ tasks:
       hosts: localhost
     next:
       - when: <% succeeded() %>
+        do: initialize_terraform
+
+  initialize_terraform:
+    action: terraform.init
+    input:
+      plan_path: /stackstorm/orchestration-demos/terraform/consul-cluster
+      backend: {"path":"/stackstorm/terraform.tfstate"}
+    next:
+      - when: <% succeeded() %>
         do: output_consul_cluster_info
 
   output_consul_cluster_info:
