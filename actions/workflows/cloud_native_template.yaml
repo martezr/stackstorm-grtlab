@@ -11,6 +11,8 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: cleanup_git_repo
+        publish:
+          - incident_id: <% result().result.sys_id.value %>
 
   cleanup_git_repo:
     action: linux.rm
@@ -83,4 +85,5 @@ tasks:
     action: servicenow.update
     input:
       table: "incident"
+      sysid: <% ctx().incident_id %>
       payload: {"state":"6"}
