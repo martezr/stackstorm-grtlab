@@ -77,7 +77,7 @@ tasks:
     action: servicenow.create_record
     input:
       payload: {"name":"centos7baseperms","object_id":"1"}
-      table: "cmdb_ci_vmware_template_list"
+      table: "cmdb_ci_vmware_template"
     next:
       - when: <% succeeded() %>
         do: close_incident
