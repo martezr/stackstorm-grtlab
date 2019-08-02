@@ -1,0 +1,86 @@
+version: 1.0
+
+description: Cloud native template workflow.
+
+tasks:
+  create_incident:
+    action: servicenow.create_record
+    input:
+      table: "incident"
+      payload: {"short_description":"CentOS 7 Monthly Image Update2","category":"software","description":"Updating CentOS 7 template","caller_id":"stackstorm"}
+    next:
+      - when: <% succeeded() %>
+        do: cleanup_git_repo
+
+  cleanup_git_repo:
+    action: linux.rm
+    input:
+      target: /stackstorm/orchestration-demos
+      recursive: True
+      sudo: True
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: clone_build_repo
+
+  clone_build_repo:
+    action: git.clone
+    input:
+      source: https://github.com/martezr/orchestration-demos.git
+      destination: /stackstorm/orchestration-demos
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: create_template
+
+  create_template:
+    action: packer.build
+    input:
+      packerfile: /stackstorm/orchestration-demos/packer/centos7base.json
+      variables_file: /stackstorm/packer-vars.json
+    next:
+      - when: <% succeeded() %>
+        do: provision_test_stack
+
+  provision_test_stack:
+    action: terraform.pipeline
+    input:
+      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+      plan_path: /stackstorm/orchestration-demos/terraform/teststack
+      backend: {"path":"/stackstorm/terraform.tfstate"}
+    next:
+      - when: <% succeeded() %>
+        do: destroy_test_stack
+
+  validate_test_stack:
+    action: core.local_sudo
+    input:
+      cmd: "curl www.google.com"
+    next:
+      - when: <% succeeded() %>
+        do: destroy_test_stack
+
+  destroy_test_stack:
+    action: terraform.destroy
+    input:
+      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+      plan_path: /stackstorm/orchestration-demos/terraform/teststack
+      state_file_path: "/stackstorm/terraform.tfstate"
+    next:
+      - when: <% succeeded() %>
+        do: create_cmd_record
+
+  create_cmd_record:
+    action: servicenow.create_record
+    input:
+      payload: {"path":"/stackstorm/terraform.tfstate"}
+      table: "test"
+    next:
+      - when: <% succeeded() %>
+        do: close_incident
+
+  close_incident:
+    action: servicenow.update_record
+    input:
+      table: "incident"
+      payload: {"state":"6"}

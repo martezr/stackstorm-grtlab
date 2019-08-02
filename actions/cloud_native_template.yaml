@@ -1,0 +1,6 @@
+---
+name: cloud_native_template
+description: A cloud native template worklflow.
+runner_type: orquesta
+entry_point: workflows/cloud_native_template.yaml
+enabled: true

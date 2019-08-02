@@ -1,0 +1,6 @@
+---
+name: upgrade_consul_cluster
+description: Upgrade a running HashiCorp Consul cluster in a rolling fashion.
+runner_type: orquesta
+entry_point: workflows/upgrade_consul_cluster.yaml
+enabled: true
