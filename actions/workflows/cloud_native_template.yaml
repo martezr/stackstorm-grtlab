@@ -10,9 +10,9 @@ tasks:
       payload: {"short_description":"CentOS 7 Monthly Image Update2","category":"software","description":"Updating CentOS 7 template","caller_id":"stackstorm"}
     next:
       - when: <% succeeded() %>
+        publish: incident_id=<% result().result.sys_id %>
         do: cleanup_git_repo
-        publish:
-          - incident_id: <% result().result.sys_id.value %>
+
 
   cleanup_git_repo:
     action: linux.rm
@@ -52,12 +52,13 @@ tasks:
       backend: {"path":"/stackstorm/terraform.tfstate"}
     next:
       - when: <% succeeded() %>
-        do: destroy_test_stack
+        do: validate_test_stack
 
   validate_test_stack:
-    action: core.local_sudo
+    action: core.http
     input:
-      cmd: "curl www.google.com"
+      url: "http://www.google.com"
+      method: "GET"
     next:
       - when: <% succeeded() %>
         do: destroy_test_stack
@@ -70,13 +71,13 @@ tasks:
       state_file_path: "/stackstorm/terraform.tfstate"
     next:
       - when: <% succeeded() %>
-        do: create_cmd_record
+        do: create_cmdb_record
 
-  create_cmd_record:
+  create_cmdb_record:
     action: servicenow.create_record
     input:
-      payload: {"path":"/stackstorm/terraform.tfstate"}
-      table: "test"
+      payload: {"name":"centos7baseperms","object_id":"1"}
+      table: "cmdb_ci_vmware_template_list"
     next:
       - when: <% succeeded() %>
         do: close_incident
