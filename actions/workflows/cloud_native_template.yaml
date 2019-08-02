@@ -80,7 +80,7 @@ tasks:
         do: close_incident
 
   close_incident:
-    action: servicenow.update_record
+    action: servicenow.update
     input:
       table: "incident"
       payload: {"state":"6"}
