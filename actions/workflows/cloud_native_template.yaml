@@ -88,7 +88,7 @@ tasks:
   create_cmdb_record:
     action: servicenow.create_record
     input:
-      payload: {"name":"<% ctx().template_name %>","description":"CentOS 7 Demo Template","guest_os":"<% ctx().template_data.guest_os_type %>","cpus":"<% ctx().template_data.CPUs %>","memory":"<% ctx().template_data.RAM %>","disk_size":"<% ctx().template_data.disk_size %>","object_id":"1"}
+      payload: {"name":"<% ctx().template_name %>","short_description":"CentOS 7 Demo Template","guest_os":"<% ctx().template_data.guest_os_type %>","cpus":"<% ctx().template_data.CPUs %>","memory":"<% ctx().template_data.RAM %>","disks_size":"<% ctx().template_data.disk_size %>","object_id":"1"}
       table: "cmdb_ci_vmware_template"
     next:
       - when: <% succeeded() %>
