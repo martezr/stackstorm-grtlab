@@ -87,4 +87,4 @@ tasks:
     input:
       table: "incident"
       sysid: <% ctx().incident_id %>
-      payload: {"state":"6"}
+      payload: {"state":"6", "close_code": "Solved (Permanently)", "close_notes": "Created template"}
