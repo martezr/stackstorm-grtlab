@@ -2,12 +2,15 @@ version: 1.0
 
 description: Cloud native template workflow.
 
+input:
+  - template_name: "centos7demo"
+
 tasks:
   create_incident:
     action: servicenow.create_record
     input:
       table: "incident"
-      payload: {"short_description":"CentOS 7 Monthly Image Update","category":"software","description":"Updating CentOS 7 template","caller_id":"stackstorm"}
+      payload: {"short_description":"CentOS 7 Monthly Image Update","category":"software","description":"Updating <% ctx().template_name %> template","caller_id":"stackstorm"}
     next:
       - when: <% succeeded() %>
         publish: incident_id=<% result().result.sys_id %>
@@ -39,6 +42,7 @@ tasks:
     input:
       packerfile: /stackstorm/orchestration-demos/packer/centos7base.json
       variables_file: /stackstorm/packer-vars.json
+      variables: {"template_name":"<% ctx().template_name %>"}
     next:
       - when: <% succeeded() %>
         do: provision_test_stack
@@ -84,16 +88,15 @@ tasks:
   create_cmdb_record:
     action: servicenow.create_record
     input:
-      payload: {"name":"centos","memory":"<% ctx().template_data.RAM %>","object_id":"1"}
+      payload: {"name":"<% ctx().template_name %>","description":"CentOS 7 Demo Template","guest_os":"<% ctx().template_data.guest_os_type %>","cpus":"<% ctx().template_data.CPUs %>","memory":"<% ctx().template_data.RAM %>","disk_size":"<% ctx().template_data.disk_size %>","object_id":"1"}
       table: "cmdb_ci_vmware_template"
     next:
       - when: <% succeeded() %>
         do: close_incident
-
 
   close_incident:
     action: servicenow.update
     input:
       table: "incident"
       sysid: <% ctx().incident_id %>
-      payload: {"state":"6", "close_code": "Solved (Permanently)", "close_notes": "Created template"}
+      payload: {"state":"6", "close_code": "Solved (Permanently)", "close_notes": "Created <% ctx().template_name %> template"}
