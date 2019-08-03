@@ -70,16 +70,26 @@ tasks:
       state_file_path: "/stackstorm/terraform.tfstate"
     next:
       - when: <% succeeded() %>
+        do: get_template_data
+
+  get_template_data:
+    action: core.local
+    input:
+      cmd: cat /stackstorm/orchestration-demos/packer/centos7base.json
+    next:
+      - when: <% succeeded() %>
+        publish: template_data=<% result().stdout.builders[0] %>
         do: create_cmdb_record
 
   create_cmdb_record:
     action: servicenow.create_record
     input:
-      payload: {"name":"centos","object_id":"1"}
+      payload: {"name":"centos","memory":"<% ctx().template_data.RAM %>","object_id":"1"}
       table: "cmdb_ci_vmware_template"
     next:
       - when: <% succeeded() %>
         do: close_incident
+
 
   close_incident:
     action: servicenow.update
