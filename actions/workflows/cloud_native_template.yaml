@@ -7,7 +7,7 @@ tasks:
     action: servicenow.create_record
     input:
       table: "incident"
-      payload: {"short_description":"CentOS 7 Monthly Image Update2","category":"software","description":"Updating CentOS 7 template","caller_id":"stackstorm"}
+      payload: {"short_description":"Alpine Monthly Image Update","category":"software","description":"Updating CentOS 7 template","caller_id":"stackstorm"}
     next:
       - when: <% succeeded() %>
         publish: incident_id=<% result().result.sys_id %>
@@ -38,7 +38,7 @@ tasks:
   create_template:
     action: packer.build
     input:
-      packerfile: /stackstorm/orchestration-demos/packer/centos7base.json
+      packerfile: /stackstorm/orchestration-demos/packer/alpine.json
       variables_file: /stackstorm/packer-vars.json
     next:
       - when: <% succeeded() %>
@@ -76,7 +76,7 @@ tasks:
   create_cmdb_record:
     action: servicenow.create_record
     input:
-      payload: {"name":"centos7baseperms","object_id":"1"}
+      payload: {"name":"alpine","object_id":"1"}
       table: "cmdb_ci_vmware_template"
     next:
       - when: <% succeeded() %>
