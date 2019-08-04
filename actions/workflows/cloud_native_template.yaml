@@ -55,15 +55,28 @@ tasks:
       backend: {"path":"/stackstorm/terraform.tfstate"}
     next:
       - when: <% succeeded() %>
-        do: validate_test_stack
+        do: output_test_stack_info
 
-  validate_test_stack:
-    action: core.http
+  output_test_stack_info:
+    action: terraform.output
     input:
-      url: "http://www.google.com"
-      method: "GET"
+      plan_path: /stackstorm/orchestration-demos/terraform/teststack
     next:
       - when: <% succeeded() %>
+        do: validate_test_stack
+        publish:
+          - ip_address: <% result().result.instance_ip_addr[0].value %>
+          - hostname: <% result().result.vm_hostname.value %>
+
+  validate_test_stack:
+    action: jenkins.build_job_wait
+    input:
+      project: "validate_teststack"
+      parameters: {"target":"<% ctx().ip_address %>"}
+    next:
+      - when: <% succeeded() %>
+        do: destroy_test_stack
+      - when: <% failed() %>
         do: destroy_test_stack
 
   destroy_test_stack:
