@@ -65,7 +65,7 @@ tasks:
       - when: <% succeeded() %>
         do: validate_test_stack
         publish:
-          - ip_address: <% result().result.instance_ip_addr[0].value %>
+          - ip_address: <% result().result.instance_ip_addr.value %>
           - hostname: <% result().result.vm_hostname.value %>
 
   validate_test_stack:
