@@ -42,11 +42,11 @@ tasks:
   provision_app_stack:
     delay: 15
     action: terraform.pipeline
-    #env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
     input:
       plan_path: /stackstorm/orchestration-demos/terraform/chaosstack
       backend: {"path":"/stackstorm/chaosstack.tfstate"}
-    next:
+      variable_dict: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
+      next:
       - when: <% succeeded() %>
         do: fetch_autoscale_group_instance
 
