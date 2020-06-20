@@ -1,0 +1,69 @@
+version: 1.0
+
+description: A basic workflow that runs an arbitrary linux command.
+
+input:
+    - asg_name: "chaosstack"
+
+tasks:
+  cleanup_git_repo:
+    action: linux.rm
+    input:
+      target: /stackstorm/orchestration-demos
+      recursive: True
+      sudo: True
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: clone_build_repo
+
+  clone_build_repo:
+    action: git.clone
+    input:
+      source: https://github.com/martezr/orchestration-demos.git
+      destination: /stackstorm/orchestration-demos
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: generate_aws_credentials
+
+  generate_aws_credentials:
+    action: vault.read path="aws/creds/stackstorm"
+    next:
+        - when: <% succeeded() %>
+        publish:
+            - access_key: <% result().result.access_key %>
+            - secret_key: <% result().result.secret_key %>
+            - stdout: <% result().stdout %>
+            - stderr: <% result().stderr %>
+        do:
+            - provision_app_stack
+
+  provision_app_stack:
+    delay: 15
+    action: terraform.pipeline
+    input:
+      env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
+      plan_path: /stackstorm/orchestration-demos/terraform/chaosstack
+      backend: {"path":"/stackstorm/chaosstack.tfstate"}
+    next:
+      - when: <% succeeded() %>
+        do: fetch_autoscale_group_instance
+
+  fetch_autoscale_group_instance:
+    delay: 10
+    action: aws.autoscaling_describe_auto_scaling_groups
+    input:
+      autoscalinggroupnames: <% ctx().asg_name %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - instance_id: <% result().result %>
+        do: run_chaos_experiment
+
+  run_chaos_experiment:
+    delay: 10
+    action: chaostoolkit.run_experiment
+    input:
+      path: /stackstorm/test.json
+      env: {"instance_id":"<% ctx().instance_id %>"}

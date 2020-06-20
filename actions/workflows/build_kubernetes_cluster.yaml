@@ -1,0 +1,91 @@
+version: 1.0
+
+description: A basic workflow that runs an arbitrary linux command.
+
+input:
+  - networking
+
+tasks:
+  cleanup_git_repo:
+    action: linux.rm
+    input:
+      target: /stackstorm/orchestration-demos
+      recursive: True
+      sudo: True
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: clone_build_repo
+
+  clone_build_repo:
+    action: git.clone
+    input:
+      source: https://github.com/martezr/orchestration-demos.git
+      destination: /stackstorm/orchestration-demos
+      hosts: localhost
+    next:
+      - when: <% succeeded() %>
+        do: provision_kubernetes_cluster
+
+  provision_kubernetes_cluster:
+    action: terraform.pipeline
+    input:
+      variable_files: ["/stackstorm/vsphere.auto.tfvars"]
+      plan_path: /stackstorm/orchestration-demos/terraform/kubernetes
+      backend: {"path":"/stackstorm/k8s.tfstate"}
+    next:
+      - when: <% succeeded() %>
+        do: output_kubernetes_cluster_info
+
+  output_kubernetes_cluster_info:
+    action: terraform.output
+    input:
+      plan_path: /stackstorm/orchestration-demos/terraform/kubernetes
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - master_ip_addresses: <% result().result.kubemaster_ip_address.value %>
+          - worker_ip_addresses: <% result().result.kubeworker_ip_address.value %>
+        do: initialize_kubernetes
+
+  initialize_kubernetes:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().master_ip_addresses %>
+      username: root
+      password: ''
+      cmd: yum -y install wget && wget https://gist.githubusercontent.com/martezr/68841b2278235bf68f4880cf23c85f9c/raw/09da79e10b203b814b3243e1d3d2b5c94a01749f/kubebootstrap.sh && chmod +x kubebootstrap.sh && ./kubebootstrap.sh <% ctx().networking %>
+      timeout: 600
+    next:
+      - when: <% succeeded() %>
+        do: fetch_kubernetes_join_command
+
+  fetch_kubernetes_join_command:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().master_ip_addresses %>
+      username: root
+      password: ''
+      cmd: kubeadm token create --print-join-command
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - join_command: <% result()['10.0.0.31']['stdout'] %>
+        do: join_workers
+
+  join_workers:
+    action: core.remote_sudo
+    input:
+      hosts: 10.0.0.32,10.0.0.33
+      username: root
+      password: ''
+      cmd: <% ctx().join_command %>
+    next:
+      - when: <% succeeded() %>
+        do: bootstrap_kubernetes
+
+  bootstrap_kubernetes:
+    action: jenkins.build_job_wait
+    input:
+      project: bootstrap_kubernetes
+      parameters: {"master_ip": "<% ctx().master_ip_addresses %>"}

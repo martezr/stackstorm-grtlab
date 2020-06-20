@@ -1,0 +1,21 @@
+---
+name: build_kubernetes_cluster
+description: A workflow demonstrating how to rollback and retry.
+runner_type: orquesta
+entry_point: workflows/build_kubernetes_cluster.yaml
+enabled: true
+parameters:
+  networking:
+    required: true
+    type: string
+    enum:
+      - calico
+      - cilium
+      - flannel
+  service_mesh:
+    required: true
+    type: string
+    enum:
+      - istio
+      - linkerd
+      - consul
