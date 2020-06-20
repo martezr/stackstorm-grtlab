@@ -30,14 +30,14 @@ tasks:
   generate_aws_credentials:
     action: vault.read path="aws/creds/stackstorm"
     next:
-        - when: <% succeeded() %>
+      - when: <% succeeded() %>
         publish:
-            - access_key: <% result().result.access_key %>
-            - secret_key: <% result().result.secret_key %>
-            - stdout: <% result().stdout %>
-            - stderr: <% result().stderr %>
+          - access_key: <% result().result.access_key %>
+          - secret_key: <% result().result.secret_key %>
+          - stdout: <% result().stdout %>
+          - stderr: <% result().stderr %>
         do:
-            - provision_app_stack
+          - provision_app_stack
 
   provision_app_stack:
     delay: 15
