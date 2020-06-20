@@ -46,7 +46,7 @@ tasks:
       plan_path: /stackstorm/orchestration-demos/terraform/chaosstack
       backend: {"path":"/stackstorm/chaosstack.tfstate"}
       variable_dict: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
-      next:
+    next:
       - when: <% succeeded() %>
         do: fetch_autoscale_group_instance
 
