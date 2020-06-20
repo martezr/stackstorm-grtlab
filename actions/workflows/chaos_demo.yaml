@@ -42,8 +42,8 @@ tasks:
   provision_app_stack:
     delay: 15
     action: terraform.pipeline
+    env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
     input:
-      env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
       plan_path: /stackstorm/orchestration-demos/terraform/chaosstack
       backend: {"path":"/stackstorm/chaosstack.tfstate"}
     next:
@@ -53,6 +53,7 @@ tasks:
   fetch_autoscale_group_instance:
     delay: 10
     action: aws.autoscaling_describe_auto_scaling_groups
+    env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
     input:
       autoscalinggroupnames: <% ctx().asg_name %>
     next:
@@ -63,7 +64,7 @@ tasks:
 
   run_chaos_experiment:
     delay: 10
+    env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>","instance_id":"<% ctx().instance_id %>"}
     action: chaostoolkit.run_experiment
     input:
       path: /stackstorm/test.json
-      env: {"instance_id":"<% ctx().instance_id %>"}
