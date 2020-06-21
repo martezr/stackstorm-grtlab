@@ -59,12 +59,12 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - instance_id: <% result().result.AutoScalingGroups.[0].Instances.[0] %>
+          - instance_id: <% result().result[0].AutoScalingGroups[0].Instances[0].InstanceId %>
         do: run_chaos_experiment
 
   run_chaos_experiment:
     delay: 10
     action: chaostoolkit.run_experiment
     input:
-      path: /stackstorm/test.json
-      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>"}
+      path: /stackstorm/orchestration-demos/chaos_experiments/aws.json
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>"}
