@@ -54,17 +54,17 @@ tasks:
     delay: 10
     action: aws.autoscaling_describe_auto_scaling_groups
     input:
-      AutoScalingGroupNames: <% ctx().asg_name %>
-      env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
+      AutoScalingGroupNames: [<% ctx().asg_name %>]
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>"}
     next:
     - when: <% succeeded() %>
       publish:
-        - instance_id: <% result().result %>
+        - instance_id: <% result().result.AutoScalingGroups.[0].Instances.[0] %>
       do: run_chaos_experiment
 
   run_chaos_experiment:
     delay: 10
-    #env: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>","instance_id":"<% ctx().instance_id %>"}
     action: chaostoolkit.run_experiment
     input:
       path: /stackstorm/test.json
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>"}
