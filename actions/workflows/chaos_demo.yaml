@@ -54,13 +54,13 @@ tasks:
     delay: 10
     action: aws.autoscaling_describe_auto_scaling_groups
     input:
-      AutoScalingGroupNames: [<% ctx().asg_name %>]
+      AutoScalingGroupNames: ["chaosstack"]
       env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>"}
     next:
-    - when: <% succeeded() %>
-      publish:
-        - instance_id: <% result().result.AutoScalingGroups.[0].Instances.[0] %>
-      do: run_chaos_experiment
+      - when: <% succeeded() %>
+        publish:
+          - instance_id: <% result().result.AutoScalingGroups.[0].Instances.[0] %>
+        do: run_chaos_experiment
 
   run_chaos_experiment:
     delay: 10
