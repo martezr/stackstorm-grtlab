@@ -77,4 +77,4 @@ tasks:
     action: chaostoolkit.run_experiment
     input:
       path: /stackstorm/orchestration-demos/chaos_experiments/aws.json
-      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>","alb_dns_nane":"<% ctx('alb_dns_name') %>"}
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>","alb_dns_name":"<% ctx('alb_dns_name') %>"}
