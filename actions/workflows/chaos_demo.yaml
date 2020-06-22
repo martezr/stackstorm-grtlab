@@ -48,6 +48,16 @@ tasks:
       variable_dict: {"aws_access_key":"<% ctx('access_key') %>","aws_secret_key":"<% ctx('secret_key') %>"}
     next:
       - when: <% succeeded() %>
+        do: output_alb_dns
+
+  output_alb_dns:
+    action: terraform.output
+    input:
+      plan_path: /stackstorm/orchestration-demos/terraform/chaosstack
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - alb_dns_name: <% result().result.alb_dns_name.value %>
         do: fetch_autoscale_group_instance
 
   fetch_autoscale_group_instance:
@@ -67,4 +77,4 @@ tasks:
     action: chaostoolkit.run_experiment
     input:
       path: /stackstorm/orchestration-demos/chaos_experiments/aws.json
-      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>"}
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>","alb_dns_nane":"<% ctx('alb_dns_name') %>"}
