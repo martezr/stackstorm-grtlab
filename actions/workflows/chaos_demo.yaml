@@ -60,21 +60,9 @@ tasks:
           - alb_dns_name: <% result().result.alb_dns_name.value %>
         do: fetch_autoscale_group_instance
 
-  fetch_autoscale_group_instance:
-    delay: 10
-    action: aws.autoscaling_describe_auto_scaling_groups
-    input:
-      AutoScalingGroupNames: ["chaosstack"]
-      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>"}
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - instance_id: <% result().result[0].AutoScalingGroups[0].Instances[0].InstanceId %>
-        do: run_chaos_experiment
-
   run_chaos_experiment:
-    delay: 10
+    delay: 120
     action: chaostoolkit.run_experiment
     input:
       path: /stackstorm/orchestration-demos/chaos_experiments/aws.json
-      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","instance_id":"<% ctx('instance_id') %>","alb_dns_name":"<% ctx('alb_dns_name') %>"}
+      env: {"AWS_ACCESS_KEY_ID":"<% ctx('access_key') %>","AWS_SECRET_ACCESS_KEY":"<% ctx('secret_key') %>","asg_name":"<% ctx('asg_name') %>","alb_dns_name":"<% ctx('alb_dns_name') %>"}
