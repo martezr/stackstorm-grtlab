@@ -58,7 +58,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - alb_dns_name: <% result().result.alb_dns_name.value %>
-        do: fetch_autoscale_group_instance
+        do: run_chaos_experiment
 
   run_chaos_experiment:
     delay: 120
