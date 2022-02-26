@@ -9,11 +9,14 @@ class CheckVaultVersionAction(Action):
         r = requests.get('https://api.github.com/repos/hashicorp/vault/tags')
         payload = json.loads(r.text)
         if active_version != payload[0]['name']:
-            message = "Time for an upgrade"
             outpayload = {}
             outpayload['current_version'] = payload[0]['name']
             outpayload['active_version'] = active_version
+            outpayload['status'] = "upgrade"
             return (True, outpayload)
         else:
-            message = "You're all good still"
-            return (True, message)
+            outpayload = {}
+            outpayload['current_version'] = ""
+            outpayload['active_version'] = ""
+            outpayload['status'] = "current"
+            return (True, outpayload)
