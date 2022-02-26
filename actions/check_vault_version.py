@@ -10,7 +10,10 @@ class CheckVaultVersionAction(Action):
         payload = json.loads(r.text)
         if active_version != payload[0]['name']:
             message = "Time for an upgrade"
-            return (True, message)
+            outpayload = {}
+            outpayload['current_version'] = payload[0]['name']
+            outpayload['active_version'] = active_version
+            return (True, json.dumps(outpayload))
         else:
             message = "You're all good still"
             return (True, message)
