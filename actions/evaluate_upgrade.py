@@ -14,10 +14,7 @@ class EvaluateUpgradeAction(Action):
 
         currentversion = semver.VersionInfo.parse(current_version)
         activeversion = semver.VersionInfo.parse(active_version)
-        #payload = {}
-        #payload['currentversion'] = currentversion
-        #payload['activeversion'] = activeversion
-        #return (True, payload)
+
         if (currentversion.major != activeversion.major):
             outpayload = {}
             outpayload['upgrade_type'] = "major"
