@@ -14,10 +14,10 @@ class EvaluateUpgradeAction(Action):
 
         currentversion = semver.VersionInfo.parse(current_version)
         activeversion = semver.VersionInfo.parse(active_version)
-        payload = {}
-        payload['currentversion'] = currentversion
-        payload['activeversion'] = activeversion
-        return (True, payload)
+        #payload = {}
+        #payload['currentversion'] = currentversion
+        #payload['activeversion'] = activeversion
+        #return (True, payload)
         if (currentversion.major != activeversion.major):
             outpayload = {}
             outpayload['upgrade_type'] = "major"
@@ -35,3 +35,7 @@ class EvaluateUpgradeAction(Action):
             outpayload['upgrade_type'] = "patch"
             print(outpayload)
             return (True, outpayload)
+
+        payload = {}
+        payload['upgrade_type'] = "logic skipped"
+        return (True, payload)
