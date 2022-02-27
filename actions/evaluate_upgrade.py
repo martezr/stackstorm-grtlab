@@ -11,16 +11,19 @@ class EvaluateUpgradeAction(Action):
             if (currentversion.major != activeversion.major):
                 outpayload = {}
                 outpayload['upgrade_type'] = "major"
+                print(outpayload)
                 return outpayload
 
             if (currentversion.minor != activeversion.minor):
                 outpayload = {}
                 outpayload['upgrade_type'] = "minor"
+                print(outpayload)
                 return outpayload
 
             if (currentversion.patch != activeversion.patch):
                 outpayload = {}
                 outpayload['upgrade_type'] = "patch"
+                print(outpayload)
                 return outpayload
 
         if current_version.startswith('v'):
@@ -32,4 +35,4 @@ class EvaluateUpgradeAction(Action):
         activeversion = semver.VersionInfo.parse(active_version)
         payload = evaluateversion(activeversion, currentversion)
         print(payload)
-        return (True, payload)
+        return (True, "testing stuff")
