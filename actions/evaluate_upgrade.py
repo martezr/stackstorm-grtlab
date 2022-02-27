@@ -31,4 +31,5 @@ class EvaluateUpgradeAction(Action):
         currentversion = semver.VersionInfo.parse(current_version)
         activeversion = semver.VersionInfo.parse(active_version)
         payload = evaluateversion(activeversion, currentversion)
+        print(payload)
         return (True, payload)
