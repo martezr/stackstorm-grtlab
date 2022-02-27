@@ -23,6 +23,11 @@ class EvaluateUpgradeAction(Action):
                 outpayload['upgrade_type'] = "patch"
                 return outpayload
 
+        if current_version.startswith('v'):
+            current_version = current_version[1:]
+        if active_version.startswith('v'):
+            active_version = active_version[1:]
+
         currentversion = semver.VersionInfo.parse(current_version)
         activeversion = semver.VersionInfo.parse(active_version)
         payload = evaluateversion(activeversion, currentversion)
