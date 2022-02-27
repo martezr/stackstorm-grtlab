@@ -7,25 +7,6 @@ from st2common.runners.base_action import Action
 
 class EvaluateUpgradeAction(Action):
     def run(self, active_version, current_version):
-        def evaluateversion(activeversion, currentversion):
-            if (currentversion.major != activeversion.major):
-                outpayload = {}
-                outpayload['upgrade_type'] = "major"
-                print(outpayload)
-                return outpayload
-
-            if (currentversion.minor != activeversion.minor):
-                outpayload = {}
-                outpayload['upgrade_type'] = "minor"
-                print(outpayload)
-                return outpayload
-
-            if (currentversion.patch != activeversion.patch):
-                outpayload = {}
-                outpayload['upgrade_type'] = "patch"
-                print(outpayload)
-                return outpayload
-
         if current_version.startswith('v'):
             current_version = current_version[1:]
         if active_version.startswith('v'):
@@ -33,6 +14,21 @@ class EvaluateUpgradeAction(Action):
 
         currentversion = semver.VersionInfo.parse(current_version)
         activeversion = semver.VersionInfo.parse(active_version)
-        payload = evaluateversion(activeversion, currentversion)
-        print(payload)
-        return (True, "testing stuff")
+
+        if (currentversion.major != activeversion.major):
+            outpayload = {}
+            outpayload['upgrade_type'] = "major"
+            print(outpayload)
+            return (True, outpayload)
+
+        if (currentversion.minor != activeversion.minor):
+            outpayload = {}
+            outpayload['upgrade_type'] = "minor"
+            print(outpayload)
+            return (True, outpayload)
+
+        if (currentversion.patch != activeversion.patch):
+            outpayload = {}
+            outpayload['upgrade_type'] = "patch"
+            print(outpayload)
+            return (True, outpayload)
