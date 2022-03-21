@@ -14,7 +14,8 @@ class CheckJenkinsVersionAction(Action):
                 continue
             if "rc" in payloadVersion['tag_name']:
                 continue
-            current_version = (payloadVersion['tag_name'])
+            stripVersion = payloadVersion['tag_name'].split('-')
+            current_version = (stripVersion[1])
             break
 
         if active_version != current_version:
