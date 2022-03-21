@@ -6,4 +6,8 @@ class FetchJenkinsVersionAction(Action):
     def run(self, host):
         r = requests.get(host + "/api/json")
         version = r.headers['X-Jenkins']
-        return (True, version)
+        if len(version.split('.')) > 2:
+            active_version = version
+        else:
+            active_version = version + ".0"
+        return (True, active_version)
