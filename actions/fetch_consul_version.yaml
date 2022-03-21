@@ -1,0 +1,12 @@
+---
+name: "fetch_consul_version"
+runner_type: "python-script"
+description: "This evaluates the active and current version."
+enabled: true
+entry_point: "fetch_consul_version.py"
+parameters:
+    host:
+        type: "string"
+        description: "Your twilio 'from' number in E.164 format. Example +14151234567."
+        required: true
+        position: 0
