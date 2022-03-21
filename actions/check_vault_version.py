@@ -12,7 +12,7 @@ class CheckVaultVersionAction(Action):
             payloadVersion = vault_tag['name']
             # exclude release candidates
             if "rc" in payloadVersion:
-                pass
+                continue
             # use the first valid version
             if payloadVersion.startswith('v'):
                current_version = payloadVersion[1:]
