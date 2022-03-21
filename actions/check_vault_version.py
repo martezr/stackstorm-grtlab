@@ -25,7 +25,7 @@ class CheckVaultVersionAction(Action):
             return (True, outpayload)
         else:
             outpayload = {}
-            outpayload['current_version'] = ""
-            outpayload['active_version'] = ""
+            outpayload['current_version'] = current_version
+            outpayload['active_version'] = active_version
             outpayload['status'] = "current"
             return (True, outpayload)
