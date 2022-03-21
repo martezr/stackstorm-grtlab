@@ -9,12 +9,12 @@ class CheckVaultVersionAction(Action):
         r = requests.get('https://api.github.com/repos/hashicorp/vault/tags')
         payload = json.loads(r.text)
         for vault_tag in payload:
+            payloadVersion = vault_tag['name']
             # exclude release candidates
-            if "rc" in vault_tag['name']:
+            if "rc" in payloadVersion:
                 pass
             # use the first valid version
             if payloadVersion.startswith('v'):
-               payloadVersion = vault_tag['name']
                current_version = payloadVersion[1:]
                break
         if active_version != current_version:
