@@ -1,0 +1,32 @@
+import requests
+import json
+import sys
+
+from st2common.runners.base_action import Action
+
+class FetchMorpheusAction(Action):
+    def run(self, active_version):
+        https://downloads.morpheusdata.com/files/morpheus-appliance-5.2.14-1.el7.x86_64.rpm
+
+if not path.exists("puppet-enterprise-2019.8.4-el-7-x86_64.tar.gz"):
+    pe_download_url = "https://pm.puppetlabs.com/cgi-bin/download.cgi?dist=el&rel=7&arch=x86_64&ver=2019.8.4"
+    r = requests.get(pe_download_url, allow_redirects=True)
+    open('puppet-enterprise-2019.8.4-el-7-x86_64.tar.gz', 'wb').write(r.content)
+
+        r = requests.get('https://api.github.com/repos/hashicorp/vault/tags')
+        payload = json.loads(r.text)
+        payloadVersion = payload[0]['name']
+        if payloadVersion.startswith('v'):
+            current_version = payloadVersion[1:]
+        if active_version != current_version:
+            outpayload = {}
+            outpayload['current_version'] = current_version
+            outpayload['active_version'] = active_version
+            outpayload['status'] = "upgrade"
+            return (True, outpayload)
+        else:
+            outpayload = {}
+            outpayload['current_version'] = ""
+            outpayload['active_version'] = ""
+            outpayload['status'] = "current"
+            return (True, outpayload)
