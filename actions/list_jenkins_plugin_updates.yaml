@@ -1,9 +1,9 @@
 ---
-name: "list_jenkins_plugins"
+name: "list_jenkins_plugin_updates"
 runner_type: "python-script"
 description: "This evaluates the active and current version."
 enabled: true
-entry_point: "list_jenkins_plugins.py"
+entry_point: "list_jenkins_plugin_updates.py"
 parameters:
     host:
         type: "string"

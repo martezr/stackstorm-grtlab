@@ -1,6 +1,6 @@
 ---
-    name: chaos_demo
-    description: A workflow to demonstrate the use of chaos engineering in StackStorm.
-    runner_type: orquesta
-    entry_point: workflows/chaos_demo.yaml
-    enabled: true
+name: chaos_demo
+description: A workflow to demonstrate the use of chaos engineering in StackStorm.
+runner_type: orquesta
+entry_point: workflows/chaos_demo.yaml
+enabled: true
