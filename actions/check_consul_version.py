@@ -13,6 +13,12 @@ class CheckConsulVersionAction(Action):
             # exclude release candidates
             if "rc" in payloadVersion:
                 continue
+            # exclude alpha releases
+            if "alpha" in payloadVersion:
+                continue
+            # exclude beta releases
+            if "beta" in payloadVersion:
+                continue     
             # use the first valid version
             if payloadVersion.startswith('v'):
                current_version = payloadVersion[1:]
